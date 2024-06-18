@@ -8,6 +8,7 @@ const app = express();
 const port = 8888;
 
 let accessToken: string | null = null;
+let server: any = null;
 
 app.get('/login', (_req, res) => {
   const scopes = [
@@ -46,7 +47,12 @@ app.get('/callback', async (req, res) => {
 
       accessToken = tokenResponse.data.access_token;
 
-      res.send('ログイン成功！ターミナルに戻ってください。');
+      res.send('ログイン成功！ターミナルに戻ってください。サーバーを停止します。');
+      if (server) {
+        server.close(() => {
+          console.log('サーバーが停止しました。');
+        });
+      }
     } catch (error) {
       console.error('トークン取得中にエラーが発生しました。', error);
       res.send('ログインに失敗しました。');
@@ -56,18 +62,17 @@ app.get('/callback', async (req, res) => {
   }
 });
 
-app.listen(port, () => {
-  console.log(`サーバーが http://localhost:${port} で起動しました。`);
-  open('http://localhost:8888/login');
-});
+export const startAuthServer = () => {
+  server = app.listen(port, () => {
+    console.log(`サーバーが http://localhost:${port} で起動しました。`);
+    open('http://localhost:8888/login');
+  });
+};
 
 export const getAccessToken = async (): Promise<string | null> => {
   if (accessToken) {
     return accessToken;
   }
-
-  // トークンの再取得ロジック
-  // 必要に応じてリダイレクトの処理を追加します
 
   return null;
 };

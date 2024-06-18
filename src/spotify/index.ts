@@ -1,4 +1,4 @@
-import client from "./client";
+import client from "./client.js";
 export async function getTrack(id: string) {
   try {
     const response = await client.get(`/tracks/${id}`);

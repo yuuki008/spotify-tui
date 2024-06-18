@@ -1,11 +1,16 @@
-import { getUserInfo } from './spotify/index';
+import { getUserInfo } from './spotify/index.js';
+import { getAccessToken, startAuthServer } from './spotify/auth/server.js';
 
 const main = async () => {
   console.log('認証を開始します...');
-  await new Promise(resolve => setTimeout(resolve, 5000)); // 認証を待つための一時停止（調整が必要です）
 
-  await getUserInfo();
+  const accessToken = await getAccessToken();
+  if (accessToken) {
+    await getUserInfo();
+  } else {
+    console.log('アクセストークンが取得できませんでした。認証サーバーを起動します...');
+    startAuthServer();
+  }
 };
 
 main().catch(console.error);
-

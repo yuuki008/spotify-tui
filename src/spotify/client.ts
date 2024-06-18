@@ -1,6 +1,5 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
-import open from 'open';
-import { getAccessToken as fetchAccessToken } from './auth';
+import { getAccessToken as fetchAccessToken, startAuthServer } from './auth/server.js';
 
 const SPOTIFY_BASE_URL = 'https://api.spotify.com/v1';
 
@@ -33,8 +32,8 @@ client.interceptors.response.use(
       try {
         accessToken = await fetchAccessToken();
         if (!accessToken) {
-          // 認証ページにリダイレクト
-          open('http://localhost:8888/login');
+          // 認証サーバーを起動
+          startAuthServer();
           return Promise.reject('認証が必要です。ブラウザを確認してください。');
         }
         originalRequest.headers.Authorization = `Bearer ${accessToken}`;
