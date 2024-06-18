@@ -5,6 +5,9 @@ import open from 'open';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import dotenv from 'dotenv'
+
+dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -26,13 +29,13 @@ const port = '8888'
 //     2. ユーザーが許可
 //     3. 認可コードを使ってアクセストークンを取得
 //     4. アクセストークンを使用して API リクエストを行う
-export class OAuth {
+export default class OAuth {
   private TOKEN_PATH: string;
   private accessToken: string | null;
   private server: any;
 
   constructor() {
-    this.TOKEN_PATH = path.resolve(__dirname, 'spotify', 'refresh_token.txt');
+    this.TOKEN_PATH = path.resolve(__dirname, 'refresh_token.txt');
     this.accessToken = null;
     this.server = null;
   }
@@ -99,14 +102,12 @@ export class OAuth {
     return null;
   }
 
-  private async refreshAccessToken(): Promise<string | null> {
+  public async refreshAccessToken(): Promise<string | null> {
     const refreshToken = this.getStoredRefreshToken();
 
-    if (!refreshToken) {
-      throw new Error('No refresh token found. Please login first.');
-    }
-
     try {
+      if (!refreshToken) throw new Error('No refresh token found. Please login first.');
+
       const response = await axios.post('https://accounts.spotify.com/api/token', querystring.stringify({
         grant_type: 'refresh_token',
         refresh_token: refreshToken,
@@ -120,9 +121,10 @@ export class OAuth {
 
       this.accessToken = response.data.access_token;
       return this.accessToken;
-    } catch (error) {
-      console.error('Error refreshing access token:', error);
-      throw new Error('Failed to refresh access token.');
+    } catch (error: any) {
+      console.error(error);
+      this.startAuthServer();
+      throw new Error(error.message);
     }
   }
 
