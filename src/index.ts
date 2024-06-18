@@ -1,16 +1,17 @@
-import { getUserInfo } from './spotify/index.js';
-import { getAccessToken, startAuthServer } from './server.js';
+import OAuth from './spotify/oauth.js';
+import SpotifyClient from './spotify/client.js';
+import dotenv from 'dotenv';
+dotenv.config();
 
 const main = async () => {
-  console.log('認証を開始します...');
+  const oauth = new OAuth();
+  const spotifyClient = new SpotifyClient(oauth);
 
-  const accessToken = await getAccessToken();
-  if (accessToken) {
-    await getUserInfo();
-  } else {
-    console.log('アクセストークンが取得できませんでした。認証サーバーを起動します...');
-    startAuthServer();
-  }
+  spotifyClient.getUserProfile().then(profile => {
+    console.log('ユーザープロフィール:', profile);
+  }).catch(error => {
+    console.error('エラー:', error);
+  });
 };
 
 main().catch(console.error);
