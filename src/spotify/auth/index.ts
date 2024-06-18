@@ -1,8 +1,10 @@
 import axios from "axios";
+import dotenv from 'dotenv';
 
+dotenv.config();
 export const clientId = process.env.SPOTIFY_CLIENT_ID || "";
 export const clientSecret = process.env.SPOTIFY_CLIENT_SECRET || "";
-export const redirectUri = 'http://localhost:8888';
+export const redirectUri = process.env.SPOTIFY_REDIRECT_URI
 export const accountEndpoint = 'https://accounts.spotify.com';
 
 export async function getAccessToken() {
