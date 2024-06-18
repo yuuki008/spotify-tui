@@ -6,9 +6,7 @@
   "type": "module",
   "keywords": [],
   "scripts": {
-    "start:server": "nodemon src/spotify/auth/server.ts",
-    "start:app": "nodemon src/index.ts",
-    "dev": "concurrently \"yarn start:server\" \"yarn start:app\""
+    "dev": "nodemon src/index.ts"
   },
   "author": "",
   "license": "ISC",

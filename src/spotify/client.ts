@@ -1,51 +1,53 @@
-import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
-import { getAccessToken as fetchAccessToken, startAuthServer } from '../server.js';
+import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
+import OAuth from './oauth.js';
 
-const SPOTIFY_BASE_URL = 'https://api.spotify.com/v1';
+export default class SpotifyClient {
+  private oauth: OAuth;
 
-let accessToken: string | null = null;
-
-const client = axios.create({
-  baseURL: SPOTIFY_BASE_URL,
-});
-
-client.interceptors.request.use(
-  async (config) => {
-    if (!accessToken) {
-      accessToken = await fetchAccessToken();
-    }
-    config.headers.Authorization = `Bearer ${accessToken}`;
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
+  constructor(oauth: OAuth) {
+    this.oauth = oauth;
   }
-);
 
-client.interceptors.response.use(
-  (response) => response,
-  async (error: AxiosError) => {
-    const originalRequest = error.config as InternalAxiosRequestConfig<any> & { _retry?: boolean };
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
-      try {
-        accessToken = await fetchAccessToken();
-        if (!accessToken) {
-          // 認証サーバーを起動
-          startAuthServer();
-          return Promise.reject('認証が必要です。ブラウザを確認してください。');
-        }
-        originalRequest.headers.Authorization = `Bearer ${accessToken}`;
-        return client(originalRequest);
-      } catch (tokenError) {
-        return Promise.reject(tokenError);
+  // NOTE: 共通の API リクエストメソッド
+  //  認証に失敗したリクエストは再度アクセストークンをリフレッシュしてリクエスト
+  private async makeRequest(config: AxiosRequestConfig, retry = true): Promise<AxiosResponse<any>> {
+    const accessToken = await this.oauth.getAccessToken();
+    if (!accessToken) {
+      throw new Error('アクセストークンが取得できませんでした。');
+    }
+
+    config.headers = {
+      ...config.headers,
+      Authorization: `Bearer ${accessToken}`,
+    };
+
+    try {
+      return await axios(config);
+    } catch (error: any) {
+      if (error.response && error.response.status === 401 && retry) {
+        await this.oauth.refreshAccessToken();
+        return this.makeRequest(config, false);
+      } else {
+        throw error;
       }
     }
-
-    return Promise.reject(error);
   }
-);
 
-export default client;
+  // ユーザーのプロフィール情報を取得するメソッド
+  public async getUserProfile() {
+    const config: AxiosRequestConfig = {
+      method: 'get',
+      url: 'https://api.spotify.com/v1/me',
+    };
+
+    try {
+      const response = await this.makeRequest(config);
+      return response.data;
+    } catch (error) {
+      console.error('ユーザープロフィールの取得中にエラーが発生しました。', error);
+      throw error;
+    }
+  }
+}
 
