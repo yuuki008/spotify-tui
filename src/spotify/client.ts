@@ -1,5 +1,5 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
-import { getAccessToken as fetchAccessToken, startAuthServer } from './auth/server.js';
+import { getAccessToken as fetchAccessToken, startAuthServer } from '../server.js';
 
 const SPOTIFY_BASE_URL = 'https://api.spotify.com/v1';
 

@@ -1,5 +1,5 @@
 import { getUserInfo } from './spotify/index.js';
-import { getAccessToken, startAuthServer } from './spotify/auth/server.js';
+import { getAccessToken, startAuthServer } from './server.js';
 
 const main = async () => {
   console.log('認証を開始します...');

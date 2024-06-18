@@ -2,7 +2,7 @@ import express from 'express';
 import axios from 'axios';
 import querystring from 'querystring';
 import open from 'open';
-import { clientId, clientSecret, redirectUri } from './index.js';
+import { clientId, clientSecret, redirectUri } from './spotify/auth.js';
 
 const app = express();
 const port = 8888;
