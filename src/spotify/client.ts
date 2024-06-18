@@ -8,9 +8,8 @@ export default class SpotifyClient {
     this.oauth = oauth;
   }
 
-
   // NOTE: 共通の API リクエストメソッド
-  //  認証に失敗したリクエストは再度アクセストークンをリフレッシュしてリクエスト
+  // 認証に失敗したリクエストは再度アクセストークンをリフレッシュしてリクエスト
   private async makeRequest(config: AxiosRequestConfig, retry = true): Promise<AxiosResponse<any>> {
     const accessToken = await this.oauth.getAccessToken();
     if (!accessToken) {
@@ -34,7 +33,6 @@ export default class SpotifyClient {
     }
   }
 
-  // ユーザーのプロフィール情報を取得するメソッド
   public async getUserProfile() {
     const config: AxiosRequestConfig = {
       method: 'get',
