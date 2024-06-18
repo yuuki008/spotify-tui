@@ -1,4 +1,5 @@
 import express from 'express';
+import keytar from 'keytar';
 import axios from 'axios';
 import querystring from 'querystring';
 import open from 'open';
@@ -78,7 +79,7 @@ export default class OAuth {
         this.accessToken = tokenResponse.data.access_token;
         const refreshToken = tokenResponse.data.refresh_token;
 
-        fs.writeFileSync(this.TOKEN_PATH, refreshToken);
+        this.saveRefreshToken(refreshToken);
 
         res.send('ログイン成功！ターミナルに戻ってください。サーバーを停止します。');
         if (this.server) {
@@ -95,15 +96,8 @@ export default class OAuth {
     }
   }
 
-  private getStoredRefreshToken(): string | null {
-    if (fs.existsSync(this.TOKEN_PATH)) {
-      return fs.readFileSync(this.TOKEN_PATH, 'utf-8').trim();
-    }
-    return null;
-  }
-
   public async refreshAccessToken(): Promise<string | null> {
-    const refreshToken = this.getStoredRefreshToken();
+    const refreshToken = await this.getRefreshToken();
 
     try {
       if (!refreshToken) throw new Error('No refresh token found. Please login first.');
@@ -152,5 +146,13 @@ export default class OAuth {
       console.error('アクセストークンの取得中にエラーが発生しました。', error);
       return null;
     }
+  }
+
+  private async saveRefreshToken(token: string) {
+    await keytar.setPassword('spotify', 'refresh_token', token);
+  }
+
+  private async getRefreshToken() {
+    return await keytar.getPassword('spotify', 'refresh_token');
   }
 }
