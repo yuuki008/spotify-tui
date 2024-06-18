@@ -3,15 +3,8 @@ import keytar from 'keytar';
 import axios from 'axios';
 import querystring from 'querystring';
 import open from 'open';
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
 import dotenv from 'dotenv'
-
 dotenv.config();
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
 
 // 開発者用の認証情報
 const clientId = process.env.SPOTIFY_CLIENT_ID;
@@ -31,12 +24,10 @@ const port = '8888'
 //     3. 認可コードを使ってアクセストークンを取得
 //     4. アクセストークンを使用して API リクエストを行う
 export default class OAuth {
-  private TOKEN_PATH: string;
   private accessToken: string | null;
   private server: any;
 
   constructor() {
-    this.TOKEN_PATH = path.resolve(__dirname, 'refresh_token.txt');
     this.accessToken = null;
     this.server = null;
   }
@@ -134,7 +125,6 @@ export default class OAuth {
     });
   }
 
-  // アクセストークンを取得する関数
   public async getAccessToken(): Promise<string | null> {
     if (this.accessToken) {
       return this.accessToken;
