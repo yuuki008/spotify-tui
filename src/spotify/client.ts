@@ -45,7 +45,7 @@ export default class SpotifyClient {
 
     try {
       const response = await axios(config);
-      return response.data as T; // ここでジェネリック型を使用
+      return response.data as T;
     } catch (error: any) {
       if (error.response && error.response.status === 401 && retry) {
         await this.oauth.refreshAccessToken();
