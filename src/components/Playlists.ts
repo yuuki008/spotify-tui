@@ -1,12 +1,13 @@
 import blessed from 'blessed';
 import SpotifyClient from '../spotify/client';
 
-export async function Playlists(client: SpotifyClient): Promise<blessed.Widgets.ListElement> {
+export async function Playlists(client: SpotifyClient): Promise<blessed.Widgets.ListElement & { playlistIds: string[] }> {
   const { items } = await client.myPlaylists();
 
   const playlistLabels = items.map((item) => item.name);
+  const playlistIds = items.map((item) => item.id);
 
-  return blessed.list({
+  const list = blessed.list({
     top: 3,
     left: 0,
     width: '25%',
@@ -16,6 +17,8 @@ export async function Playlists(client: SpotifyClient): Promise<blessed.Widgets.
     border: {
       type: 'line'
     },
+    keys: true,
+    vi: true,
     style: {
       selected: {
         bg: 'blue'
@@ -26,7 +29,16 @@ export async function Playlists(client: SpotifyClient): Promise<blessed.Widgets.
       },
       border: {
         fg: '#f0f0f0'
+      },
+      focus: {
+        border: {
+          fg: 'yellow'
+        }
       }
     }
-  });
+  }) as blessed.Widgets.ListElement & { playlistIds: string[] };
+
+  list.playlistIds = playlistIds;
+  return list;
 }
+
