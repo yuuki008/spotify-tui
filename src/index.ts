@@ -8,6 +8,7 @@ import { Main } from './components/Main.js';
 // スクリーンを作成
 const screen = blessed.screen({
   smartCSR: true,
+  fullUnicode: true,
   title: 'Spotify TUI Example'
 });
 
