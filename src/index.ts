@@ -7,11 +7,8 @@ const main = async () => {
   const oauth = new OAuth();
   const spotifyClient = new SpotifyClient(oauth);
 
-  spotifyClient.getUserProfile().then(profile => {
-    console.log('ユーザープロフィール:', profile);
-  }).catch(error => {
-    console.error('エラー:', error);
-  });
+  const playlists = await spotifyClient.myPlaylists();
+  console.log(playlists);
 };
 
 main().catch(console.error);
