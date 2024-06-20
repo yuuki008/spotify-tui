@@ -1,7 +1,7 @@
 {
   "watch": ["src"],
-  "ext": "ts",
+  "ext": "ts,tsx",
   "ignore": ["src/**/*.test.ts"],
-  "exec": "ts-node --esm"
+  "exec": "npm run build && node dist/bundle.js"
 }
 
