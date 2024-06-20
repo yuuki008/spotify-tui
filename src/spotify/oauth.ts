@@ -12,10 +12,6 @@ const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
 const redirectUri = process.env.SPOTIFY_REDIRECT_URI;
 const port = '8888'
 
-
-
-
-
 // 認証方法は Authorization Code Flow を採用
 //   ドキュメント: https://developer.spotify.com/documentation/web-api/tutorials/code-flow
 //   認証フロー:

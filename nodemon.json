@@ -1,7 +1,7 @@
 {
   "watch": ["src"],
-  "ext": "ts",
+  "ext": "ts,tsx",
   "ignore": ["src/**/*.test.ts"],
-  "exec": "ts-node --esm"
+  "exec": "webpack --config webpack.config.mjs && node dist/bundle.js"
 }
 

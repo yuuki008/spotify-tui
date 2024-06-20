@@ -61,7 +61,7 @@ interface Tracks {
 }
 
 // Itemの型定義
-interface Item {
+export interface Playlist {
   collaborative: boolean;
   description: string;
   external_urls: ExternalUrls;
@@ -85,6 +85,6 @@ export interface SpotifyShowsResponse {
   offset: number;
   previous: string | null;
   total: number;
-  items: Item[];
+  items: Playlist[];
 }
 
